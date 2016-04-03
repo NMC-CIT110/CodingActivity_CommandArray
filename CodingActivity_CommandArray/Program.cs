@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FinchAPI;
 
 namespace CodingActivity_CommandArray
 {
@@ -18,8 +19,7 @@ namespace CodingActivity_CommandArray
             TURNRIGHT,
             TURNLEFT,
             LEDON,
-            LEDOFF,
-            TERMINATE
+            LEDOFF
         }
 
         private const int NUMBER_OF_COMMNANDS = 5;
@@ -29,7 +29,34 @@ namespace CodingActivity_CommandArray
 
         static void Main(string[] args)
         {
-           FinchCommand[] commands = new FinchCommand[NUMBER_OF_COMMNANDS];
+            FinchCommand[] commands = new FinchCommand[NUMBER_OF_COMMNANDS];
+            Finch myFinch = new Finch();
+
+
+            
         }
+
+        /// <summary>
+        /// Turn the cursor off and display a continue prompt to the user
+        /// </summary>
+        private static void DisplayContinuePrompt()
+        {
+            Console.WriteLine();
+
+            //
+            // turn cursor off
+            //
+            Console.CursorVisible = false;
+
+            Console.Write("Press any key to continue.");
+            Console.ReadKey();
+
+            //
+            // turn cursor on
+            //
+            Console.CursorVisible = true;
+        }
+
+
     }
 }
