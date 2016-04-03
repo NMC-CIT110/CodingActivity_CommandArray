@@ -12,6 +12,7 @@ namespace CodingActivity_CommandArray
         #region GLOBALS
         private enum FinchCommand
         {
+            DONE,
             MOVEFORWARD,
             MOVEBACKWARD,
             STOP,
@@ -38,7 +39,7 @@ namespace CodingActivity_CommandArray
 
             DisplayGetFinchCommands(commands);
 
-            //TerminateFinch(myFinch);
+            TerminateFinch(myFinch);
 
             DisplayClosingScreen();
         }
@@ -160,6 +161,10 @@ namespace CodingActivity_CommandArray
             DisplayContinuePrompt();
         }
 
+        /// <summary>
+        /// Add the user command sequence to the command array
+        /// </summary>
+        /// <param name="commands">array of FinchCommand</param>
         private static void DisplayGetFinchCommands(FinchCommand[] commands)
         {
             Console.Clear();
@@ -171,6 +176,9 @@ namespace CodingActivity_CommandArray
             Console.WriteLine();
             Console.WriteLine("You will be prompted for each command.");
 
+            //
+            // Display all of the enum command options
+            //
             Console.WriteLine("Command Options: ");
             Console.Write("| ");
             foreach (var command in Enum.GetValues(typeof(FinchCommand)))
@@ -179,7 +187,66 @@ namespace CodingActivity_CommandArray
             }
             Console.WriteLine();
 
+            for (int index = 0; index < NUMBER_OF_COMMNANDS; index++)
+            {
+                commands[index] = GetFinchCommandValue();
+            }
+
+            Console.Clear();
+            Console.WriteLine();
+            Console.WriteLine("You have completed the command entry.");
+            Console.WriteLine("The command sequence you have selected is listed below.");
+            foreach (FinchCommand command in commands)
+            {
+                Console.WriteLine("Command: " + command);
+            }
+
+            Console.WriteLine();
+
             DisplayContinuePrompt();
+        }
+
+        /// <summary>
+        /// Prompt user for a FinchCommand and validate the response
+        /// </summary>
+        /// <returns>FinchCommand</returns>
+        private static FinchCommand GetFinchCommandValue()
+        {
+            FinchCommand userCommand = FinchCommand.DONE;
+            string userResponse;
+            bool userResponseValid = false;
+
+            while (!userResponseValid)
+            {
+                Console.Write("Command: ");
+                userResponse = Console.ReadLine().Trim().ToUpper();
+
+                if (Enum.TryParse<FinchCommand>(userResponse, out userCommand))
+                {
+                    userResponseValid = true;
+                }
+                else
+                {
+                    Console.Clear();
+                    Console.WriteLine();
+                    Console.WriteLine("It appears that you entered and invalid command.");
+                    Console.WriteLine("Please reenter your command.");
+                    Console.WriteLine();
+
+                    //
+                    // Display all of the enum command options
+                    //
+                    Console.WriteLine("Command Options: ");
+                    Console.Write("| ");
+                    foreach (var command in Enum.GetValues(typeof(FinchCommand)))
+                    {
+                        Console.Write(command + " | ");
+                    }
+                    Console.WriteLine();
+                }
+            }
+
+            return userCommand;
         }
     }
 }
