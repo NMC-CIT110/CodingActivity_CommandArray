@@ -15,7 +15,7 @@ namespace CodingActivity_CommandArray
             DONE,
             MOVEFORWARD,
             MOVEBACKWARD,
-            STOP,
+            STOPMOTORS,
             DELAY,
             TURNRIGHT,
             TURNLEFT,
@@ -23,8 +23,10 @@ namespace CodingActivity_CommandArray
             LEDOFF
         }
 
-        private const int NUMBER_OF_COMMNANDS = 5;
-        private const int COMMAND_DURATION = 5;
+        private const int NUMBER_OF_COMMNANDS = 6;
+        private const int DELAY_DURATION = 2000;
+        private const int MOTOR_SPEED = 100;
+        private const int LED_BRIGHTNESS = 200;
 
         #endregion
 
@@ -38,6 +40,8 @@ namespace CodingActivity_CommandArray
             InitializeFinch(myFinch);
 
             DisplayGetFinchCommands(commands);
+
+            ProcessFinchCommands(myFinch, commands);
 
             TerminateFinch(myFinch);
 
@@ -109,13 +113,15 @@ namespace CodingActivity_CommandArray
 
             myFinch.connect();
 
+            //
+            // Audio/visual feedback to user
+            //
             for (int increment = 0; increment < 255; increment += 10)
             {
                 myFinch.setLED(0, increment, 0);
                 //myFinch.noteOn(increment * 100);
                 myFinch.wait(200);
             }
-
             myFinch.setLED(0, 0, 0);
             myFinch.noteOff();
 
@@ -140,13 +146,15 @@ namespace CodingActivity_CommandArray
             Console.WriteLine("Attempting to disconnect from the Finch robot.");
             Console.WriteLine();
 
+            //
+            // Audio/visual feedback to user
+            //
             for (int increment = 255; increment > 0; increment -= 10)
             {
                 myFinch.setLED(0, increment, 0);
-                //myFinch.noteOn(increment * 100);
+                myFinch.noteOn(increment * 100);
                 myFinch.wait(200);
             }
-
             myFinch.setLED(0, 0, 0);
             myFinch.noteOff();
 
@@ -180,18 +188,28 @@ namespace CodingActivity_CommandArray
             // Display all of the enum command options
             //
             Console.WriteLine("Command Options: ");
-            Console.Write("| ");
+            Console.WriteLine();
+
+            //
+            // List all available commands form the FinchCommand enum
+            //
             foreach (var command in Enum.GetValues(typeof(FinchCommand)))
             {
-                Console.Write(command + " | ");
+                Console.WriteLine("\t| " + command);
             }
             Console.WriteLine();
 
+            //
+            // Get individual commands from the user and add each to the array of commands
+            //
             for (int index = 0; index < NUMBER_OF_COMMNANDS; index++)
             {
                 commands[index] = GetFinchCommandValue();
             }
 
+            //
+            // Confirm and echo the command sequence to the user
+            //
             Console.Clear();
             Console.WriteLine();
             Console.WriteLine("You have completed the command entry.");
@@ -247,6 +265,57 @@ namespace CodingActivity_CommandArray
             }
 
             return userCommand;
+        }
+
+        /// <summary>
+        /// Process each command 
+        /// </summary>
+        /// <param name="myFinch">Finch robot object</param>
+        /// <param name="commands">FinchCommand</param>
+        private static void ProcessFinchCommands(Finch myFinch, FinchCommand[] commands)
+        {
+            Console.Clear();
+            Console.WriteLine();
+            Console.WriteLine("The application will now process your command sequence.");
+            Console.WriteLine();
+
+            foreach (FinchCommand command in commands)
+            {
+                Console.WriteLine("Command Currently Executing: " + command.ToString());
+
+                switch (command)
+                {
+                    case FinchCommand.DONE:
+                        break;
+                    case FinchCommand.MOVEFORWARD:
+                        myFinch.setMotors(MOTOR_SPEED, MOTOR_SPEED);
+                        break;
+                    case FinchCommand.MOVEBACKWARD:
+                        myFinch.setMotors(-MOTOR_SPEED, -MOTOR_SPEED);
+                        break;
+                    case FinchCommand.STOPMOTORS:
+                        myFinch.setMotors(0, 0);
+                        break;
+                    case FinchCommand.DELAY:
+                        myFinch.wait(DELAY_DURATION);
+                        break;
+                    case FinchCommand.TURNRIGHT:
+                        myFinch.setMotors(MOTOR_SPEED, -MOTOR_SPEED);
+                        break;
+                    case FinchCommand.TURNLEFT:
+                        myFinch.setMotors(-MOTOR_SPEED, MOTOR_SPEED);
+                        break;
+                    case FinchCommand.LEDON:
+                        myFinch.setLED(LED_BRIGHTNESS, LED_BRIGHTNESS, LED_BRIGHTNESS);
+                        break;
+                    case FinchCommand.LEDOFF:
+                        myFinch.setLED(0, 0, 0);
+                        break;
+                    default:
+                        break;
+                }
+
+            }
         }
     }
 }
